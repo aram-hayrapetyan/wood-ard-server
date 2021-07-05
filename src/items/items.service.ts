@@ -1,0 +1,48 @@
+import { Injectable } from '@nestjs/common';
+
+export type Item = any;
+
+@Injectable()
+export class ItemsService {
+    private readonly items = [
+        {
+            id: 1,
+            type: 'lamp',
+            material: 'wood',
+            name: 'wooden lamp',
+            size: 'small'
+        },
+        {
+            id: 2,
+            type: 'lamp',
+            material: 'iron',
+            name: 'iron lamp',
+            size: 'small'
+        },
+        {
+            id: 3,
+            type: 'table',
+            material: 'wood',
+            name: 'wooden table',
+            size: 'big'
+        },
+        {
+            id: 4,
+            type: 'table',
+            material: 'epoxide',
+            name: 'epoxide table',
+            size: 'small'
+        },
+        {
+            id: 5,
+            type: 'table',
+            material: 'ebonite',
+            name: 'ebonite table',
+            size: 'medium'
+        }
+    ]
+
+    async getAll(): Promise<Item[]> {
+        return this.items;
+    }
+}
