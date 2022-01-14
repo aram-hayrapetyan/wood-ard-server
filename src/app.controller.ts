@@ -40,7 +40,7 @@ export class AppController {
     return await this.userService.getAll();
   }
 
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @Get('items')
   async getItems(@Request() req) {
     return await this.itemService.getAll();
