@@ -7,6 +7,7 @@ import { UsersService } from './users/users.service';
 import { ItemsService } from './items/items.service';
 import { join } from 'path';
 import { readdir } from 'fs';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller()
 export class AppController {
@@ -39,6 +40,7 @@ export class AppController {
     return await this.userService.getAll();
   }
 
+  // @UseGuards(JwtAuthGuard)
   @Get('items')
   async getItems(@Request() req) {
     return await this.itemService.getAll();

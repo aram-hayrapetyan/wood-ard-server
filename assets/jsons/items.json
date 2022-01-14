@@ -1,0 +1,82 @@
+[
+    {
+        "id": 1,
+        "type": "cup",
+        "material": "wood",
+        "name": "wooden cup",
+        "size": "small",
+        "image": "https://thumbs.dreamstime.com/b/hand-drawing-wooden-beer-mug-empty-vector-illustration-66859494.jpg"
+    },
+    {
+        "id": 2,
+        "type": "lamp",
+        "material": "iron",
+        "name": "iron lamp",
+        "size": "small",
+        "image": "https://image.shutterstock.com/image-vector/classic-street-lamp-outdoor-lighting-260nw-1942029892.jpg"
+    },
+    {
+        "id": 3,
+        "type": "table",
+        "material": "wood",
+        "name": "wooden table",
+        "size": "big",
+        "image": "https://cdn.w600.comps.canstockphoto.com/drawing-of-a-wooden-dining-table-vector-image_csp69303975.jpg"
+    },
+    {
+        "id": 4,
+        "type": "table",
+        "material": "epoxide",
+        "name": "epoxide table",
+        "size": "small",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/Aflatoxin_B1_exo-8%2C9-epoxide.svg/1200px-Aflatoxin_B1_exo-8%2C9-epoxide.svg.png"
+    },
+    {
+        "id": 5,
+        "type": "armor",
+        "material": "ebonite, daedra heart",
+        "name": "daedric armor",
+        "size": "medium",
+        "image": "https://eip.gg/wp-content/uploads/2020/03/Daedric-Gear.gif"
+    },
+    {
+        "id": 6,
+        "type": "lamp",
+        "material": "wood",
+        "name": "wooden lamp",
+        "size": "small",
+        "image": "https://m.media-amazon.com/images/I/61oru8LL+jL._AC_SS450_.jpg"
+    },
+    {
+        "id": 7,
+        "type": "lamp",
+        "material": "iron",
+        "name": "iron lamp",
+        "size": "small",
+        "image": "https://image.shutterstock.com/image-vector/classic-street-lamp-outdoor-lighting-260nw-1942029892.jpg"
+    },
+    {
+        "id": 8,
+        "type": "table",
+        "material": "wood",
+        "name": "wooden table",
+        "size": "big",
+        "image": "https://cdn.w600.comps.canstockphoto.com/drawing-of-a-wooden-dining-table-vector-image_csp69303975.jpg"
+    },
+    {
+        "id": 9,
+        "type": "table",
+        "material": "epoxide",
+        "name": "epoxide table",
+        "size": "small",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/Aflatoxin_B1_exo-8%2C9-epoxide.svg/1200px-Aflatoxin_B1_exo-8%2C9-epoxide.svg.png"
+    },
+    {
+        "id": 10,
+        "type": "armor",
+        "material": "ebonite, daedra heart",
+        "name": "daedric armor",
+        "size": "medium",
+        "image": "https://eip.gg/wp-content/uploads/2020/03/Daedric-Gear.gif"
+    }
+]
