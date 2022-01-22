@@ -46,6 +46,14 @@ export class AppController {
     return await this.itemService.getAll();
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Post('items')
+  async addItems(@Request() req) {
+    console.log(req.user)
+    console.log(req.body)
+    return 'sbhsdhj';
+  }
+
   @Get('public/:dir')
   async getFiles(@Param() params: any, @Request() req: any, @Res() res: any) {
     const {dir} = params;
