@@ -30,6 +30,8 @@
 
 ```bash
 $ npm install
+
+$ node keys/crypt.js
 ```
 
 ## Running the app
