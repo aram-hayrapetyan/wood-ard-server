@@ -3,19 +3,14 @@ import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { LocalAuthGuard } from './auth/local-auth.guard';
 import { AuthService } from './auth/auth.service';
 import { AppService } from './app.service';
-import { UsersService } from './users/users.service';
-import { ItemsService } from './items/items.service';
 import { join } from 'path';
 import { readdir } from 'fs';
-import { AuthGuard } from '@nestjs/passport';
 
 @Controller()
 export class AppController {
   constructor(
     private appService: AppService,
     private authService: AuthService,
-    private userService: UsersService,
-    private itemService: ItemsService,
   ) {}
 
   @Get('message')
@@ -29,30 +24,7 @@ export class AppController {
     return await this.authService.login(req.user);
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Get('profile')
-  async getProfile(@Request() req) {
-    return await this.userService.findOne(req.user.email);
-  }
-
-  @Get('users')
-  async getUsers(@Request() req) {
-    return await this.userService.getAll();
-  }
-
   // @UseGuards(JwtAuthGuard)
-  @Get('items')
-  async getItems(@Request() req) {
-    return await this.itemService.getAll();
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Post('items')
-  async addItems(@Request() req) {
-    console.log(req.user)
-    console.log(req.body)
-    return 'sbhsdhj';
-  }
 
   @Get('public/:dir')
   async getFiles(@Param() params: any, @Request() req: any, @Res() res: any) {
