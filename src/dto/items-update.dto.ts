@@ -1,11 +1,11 @@
 export class UpdateItemsDTO {
-    readonly type: string;
+    readonly type?: string;
 
-    readonly name: string;
+    readonly name?: string;
 
-    readonly material: string;
+    readonly material?: string;
 
-    readonly size: string;
+    readonly size?: string;
     
-    readonly image: string;
+    readonly image?: string;
 }
