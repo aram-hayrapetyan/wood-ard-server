@@ -58,6 +58,17 @@ export class AppController {
         if (err) {
           return res.status(404).end();
         }
-    })
+    });
+  }
+
+  @Get('public/:dir/thumbnail/:file')
+  async getFileThumb(@Param() params: any, @Res() res: any) {
+    const {dir, file} = params;
+
+    res.sendFile(join(process.cwd(), 'public', dir, 'thumbnail', file), function (err) {
+        if (err) {
+          return res.status(404).end();
+        }
+    });
   }
 }

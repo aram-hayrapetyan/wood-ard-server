@@ -9,6 +9,9 @@ export class ItemAlbum {
     @Column()
     image: string;
 
+    @Column()
+    thumb: string;
+
     @ManyToOne(() => Item, {
         onDelete: 'CASCADE'
     })

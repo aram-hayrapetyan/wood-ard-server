@@ -9,6 +9,7 @@ import { ItemsModule } from './items/items.module';
 // import { MulterModule } from '@nestjs/platform-express';
 import { TypeOrmModule } from '@nestjs/typeorm';
 // import { diskStorage } from 'multer';
+import { GenralSliderModule } from './genral-slider/genral-slider.module';
 
 @Module({
   imports: [
@@ -40,7 +41,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
     }),
     AuthModule,
     UsersModule,
-    ItemsModule
+    ItemsModule,
+    GenralSliderModule
   ],
   controllers: [AppController],
   providers: [AppService],

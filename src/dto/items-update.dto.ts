@@ -5,7 +5,9 @@ export class UpdateItemsDTO {
 
     readonly material?: string;
 
-    readonly size?: string;
+    readonly details?: string;
     
     readonly image?: string;
+
+    readonly price?: number;
 }

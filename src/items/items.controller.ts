@@ -1,8 +1,9 @@
 import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Req, Res, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { Response } from 'express';
-import { existsSync, mkdirSync, unlinkSync } from 'fs';
+import { existsSync, mkdirSync, readFileSync, unlinkSync } from 'fs';
 import { diskStorage } from 'multer';
+import sharp = require('sharp');
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreateItemsDTO } from '../dto/items-create.dto';
 import { UpdateItemsDTO } from '../dto/items-update.dto';
@@ -36,7 +37,9 @@ export class ItemsController {
         @Body() body: CreateItemsDTO,
     ) {
         try {
-            let items = await this.itemService.addItems(body);
+            await this.itemService.addItems(body);
+
+            let items = await this.itemService.getItems();
 
             return res.status(HttpStatus.CREATED).send({ success: true, data: items });
         } catch (e) {
@@ -53,10 +56,11 @@ export class ItemsController {
         @Body() body: UpdateItemsDTO
     ) {
         try {
-            let updated = await this.itemService.editItem(parseInt(id), body);
-            console.log(updated);
+            await this.itemService.editItem(parseInt(id), body);
+            
+            let items = await this.itemService.getItems();
 
-            return res.status(HttpStatus.ACCEPTED).send({ success: true, message: 'Item was updated.', data: updated });
+            return res.status(HttpStatus.ACCEPTED).send({ success: true, message: 'Item was updated.', data: items });
         } catch (e) {
             return res.status(HttpStatus.BAD_REQUEST).send({ success: false, message: e.message });
         }
@@ -70,10 +74,11 @@ export class ItemsController {
         @Param('id') id: string
     ) {
         try {
-            let removed = await this.itemService.removeItem(parseInt(id));
-            console.log(removed)
+            await this.itemService.removeItem(parseInt(id));
 
-            return res.status(HttpStatus.ACCEPTED).send({ success: true, message: 'Item was removed from system.', data: removed });
+            let items = await this.itemService.getItems();
+
+            return res.status(HttpStatus.ACCEPTED).send({ success: true, message: 'Item was removed from system.', data: items });
         } catch (e) {
             return res.status(HttpStatus.BAD_REQUEST).send({ success: false, message: e.message });
         }
@@ -87,7 +92,7 @@ export class ItemsController {
         @Param('id') id: string
     ) {
         try {
-            let deleted = await this.itemService.deleteRestoreItem(parseInt(id), false);
+            await this.itemService.deleteRestoreItem(parseInt(id), false);
             
             let items = await this.itemService.getItems();
 
@@ -105,7 +110,7 @@ export class ItemsController {
         @Param('id') id: string
     ) {
         try {
-            let restored = await this.itemService.deleteRestoreItem(parseInt(id), true);
+            await this.itemService.deleteRestoreItem(parseInt(id), true);
             
             let items = await this.itemService.getItems();
             
@@ -121,8 +126,12 @@ export class ItemsController {
                 if (!existsSync('public/items')){
                     mkdirSync('public/items');
                 }
+
+                if (!existsSync('public/items/thumbnail')){
+                    mkdirSync('public/items/thumbnail');
+                }
+
                 return cb(null, 'public/items');
-                // cb(null, `${process.cwd()}/public/items`);
             },
             filename: function (req, file, cb) {
                 const extention = file.originalname.split('.').pop();
@@ -131,7 +140,6 @@ export class ItemsController {
             },
         }),
         fileFilter: async (req, file: any, cb) => {
-            
             if (!/\.(jpe?g|png|JPE?G|PNG)$/i.test(file.originalname)) {
                 return cb(new Error('Uploaded file must have image mimetype'), false);
             }
@@ -142,14 +150,27 @@ export class ItemsController {
     @UseGuards(JwtAuthGuard)
     @Post(':id/image')
     public async uploadImagesForItem(@Req() req, @Res() res: Response, 
-        @UploadedFiles() files,
+        @UploadedFiles() files: Array<Express.Multer.File>,
         @Param('id') id: string
     ) {
         try {
             let item = await this.itemService.getItem(parseInt(id));
             
-            let store = await this.itemService.storeItemImages(files, item);
-            return res.status(200).json({ response: 'Successful image uploading', data: store });
+            if (files.length) {
+                await this.itemService.storeItemImages(files, item);
+    
+                for (let file of files) {
+                    let buff = readFileSync(`public/items/${file.filename}`)
+                    
+                    sharp(buff)
+                        .resize(160, 120)
+                        .toFile(`public/items/thumbnail/thumb_${file.filename}`, (err, info) => { console.log(err, info) });
+                }
+            }
+
+            let items = await this.itemService.getItems();
+
+            return res.status(HttpStatus.CREATED).json({ response: 'Successful image uploading', data: items });
         } catch (e) {
             return res.status(HttpStatus.BAD_REQUEST).send({ success: false, message: e.message });
         }
@@ -165,7 +186,13 @@ export class ItemsController {
 
             let removed = await this.itemService.removeItemImage(id);
 
-            if (removed.affected) unlinkSync(`${process.cwd()}/${image}`);
+            if (removed.affected) {
+                let path_arr = image.split('/');
+                path_arr[2] = 'thumbnail/thumb_' +  path_arr[2];
+
+                unlinkSync(`${process.cwd()}/${image}`);
+                unlinkSync(`${process.cwd()}/${path_arr.join('/')}`);
+            }
 
             let items = await this.itemService.getItems();
 
@@ -183,11 +210,12 @@ export class ItemsController {
         @Param('image_id') image_id: string
     ) {
         try {
-            let { image } = await this.itemService.getItemImage(parseInt(image_id));
+            let { image, thumb } = await this.itemService.getItemImage(parseInt(image_id));
 
-            await this.itemService.setItemGeneralImage(parseInt(id), image);
+            await this.itemService.setItemGeneralImage(parseInt(id), image, thumb);
 
             let items = await this.itemService.getItems();
+
             return res.status(201).json({ response: 'Successful general image set', data: items });
         } catch (e) {
             return res.status(HttpStatus.BAD_REQUEST).send({ success: false, message: e.message });
