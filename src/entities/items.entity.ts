@@ -15,14 +15,20 @@ export class Item extends BaseEntity {
     @Column({ type: 'text' })
     material: string;
     
-    @Column({ type: 'text' })
-    size: string;
+    @Column({ type: 'text', nullable: true })
+    details: string;
+
+    @Column({ type: 'float' })
+    price: number;
 
     @Column({ nullable: true, default: 'public/items/noImage.png' })
     image?: string;
 
     @Column({ type: 'boolean', nullable: true })
     deleted?: boolean;
+
+    @Column({ nullable: true, default: 'public/items/noImage.png' })
+    thumb?: string;
 
     @Column({
         type: "timestamp",

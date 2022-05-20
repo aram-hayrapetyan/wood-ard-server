@@ -46,13 +46,13 @@ export class ItemsService {
         newItem.name     = item.name;
         newItem.type     = item.type;
         newItem.material = item.material;
-        newItem.size     = item.size;
+        newItem.price    = item.price;
+        newItem.details  = item.details;
 
         return await newItem.save();
     }
 
     async editItem(id: number, item: UpdateItemsDTO): Promise<any> {
-        console.log({id, item})
         return await this.connection.createQueryBuilder()
             .update(Item)
             .set(item)
@@ -85,7 +85,11 @@ export class ItemsService {
 
     async storeItemImages(files: any, item: Item) {
         let storeData = files.map(file => {
-            return { item, image: file.path }
+            return { 
+                item, 
+                image: `public/items/${file.filename}`,
+                thumb: `public/items/thumbnail/thumb_${file.filename}`
+            }
         })
 
         return await this.connection.createQueryBuilder()
@@ -103,10 +107,10 @@ export class ItemsService {
             .execute();
     }
 
-    async setItemGeneralImage(id: number, image: string) {
+    async setItemGeneralImage(id: number, image: string, thumb: string) {
         return await this.connection.createQueryBuilder()
             .update(Item)
-            .set({image})
+            .set({image, thumb})
             .where('item.id=:id', { id })
             .execute();
     }

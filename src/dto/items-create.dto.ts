@@ -10,9 +10,8 @@ export class CreateItemsDTO {
     @IsNotEmpty()
     readonly material: string;
     
-    @IsNotEmpty()
-    readonly size: string;
+    readonly details?: string;
 
-    // @IsNotEmpty()
-    // readonly image: any;
+    @IsNotEmpty()
+    readonly price: number;
 }
