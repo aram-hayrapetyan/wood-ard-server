@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Req, Res, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Query, Req, Res, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { Response } from 'express';
 import { existsSync, mkdirSync, readFileSync, unlinkSync } from 'fs';
@@ -23,8 +23,8 @@ export class ItemsController {
     }
 
     @Get('public')
-    async getPublicItems(@Req() req, @Res() res: Response) {
-        let items = await this.itemService.getItems(true);
+    async getPublicItems(@Req() req, @Res() res: Response, @Query() query_params: any) {
+        let items = await this.itemService.getItems(true, query_params);
 
         return res.status(HttpStatus.OK).send(items);
     }
