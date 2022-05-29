@@ -1,5 +1,6 @@
-import { BaseEntity, Column, Entity, JoinTable, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, Entity, JoinTable, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { ItemAlbum } from "./item-album.entity";
+import { Types } from "./types.entity";
 
 @Entity()
 export class Item extends BaseEntity {
@@ -51,4 +52,11 @@ export class Item extends BaseEntity {
     @OneToMany(() => ItemAlbum,  album => album.item)
     @JoinTable()
     album: ItemAlbum[];
+
+    @ManyToOne(() => Types, {
+        onDelete: 'SET NULL',
+        nullable: true,
+    })
+    @JoinTable({ name: 'type_key_id' })
+    type_key: Types;
 }

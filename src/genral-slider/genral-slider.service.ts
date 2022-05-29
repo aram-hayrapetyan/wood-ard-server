@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { SliderCreateDTO } from 'src/dto/slider-create.dto';
-import { SliderUpdateDTO } from 'src/dto/slider-update.dto';
-import { GeneralSlider } from 'src/entities/general-slider.entity';
+import { SliderCreateDTO } from '../dto/slider-create.dto';
+import { SliderUpdateDTO } from '../dto/slider-update.dto';
+import { GeneralSlider } from '../entities/general-slider.entity';
 import { Connection, Repository } from 'typeorm';
 
 @Injectable()

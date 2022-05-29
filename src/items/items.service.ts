@@ -6,12 +6,14 @@ import { UpdateItemsDTO } from '../dto/items-update.dto';
 import { ItemAlbum } from '../entities/item-album.entity';
 import { Item } from '../entities/items.entity';
 import { Connection, Repository } from 'typeorm';
+import { Types } from '../entities/types.entity';
 
 @Injectable()
 export class ItemsService {
     constructor(
         private connection: Connection,
-        @InjectRepository(ItemAlbum) public readonly itemAlbumEntityRepository: Repository<ItemAlbum>
+        @InjectRepository(ItemAlbum) public readonly itemAlbumEntityRepository: Repository<ItemAlbum>,
+        @InjectRepository(Types) public readonly typesEntityRepository: Repository<Types>
     ) {}
 
     async getAll(): Promise<any[]> {
@@ -23,13 +25,23 @@ export class ItemsService {
         }
     }
 
-    async getItems(visible: boolean = false): Promise<any[]> {
+    async getItems(visible: boolean = false, params?: any): Promise<any[]> {
         let query = this.connection.createQueryBuilder(Item, 'item')
-            .leftJoinAndSelect('item.album', 'album');
+            .leftJoinAndSelect('item.album', 'album')
+            .leftJoinAndSelect('item.type_key', 'type_key')
+            .where('item.created_at IS NOT NULL');
         
         if (visible) {
-            query.where('item.deleted IS NULL');
+            query.andWhere('item.deleted IS NULL');
         }
+
+        if (params.type && params.type !== '-1') {
+            if (params.type === '0')
+                query.andWhere('item.type_key IS NULL');
+            else
+                query.andWhere(`item.type_key.id = ${params.type}`);
+        }
+
         return await query.getMany();
     }
 
@@ -42,6 +54,11 @@ export class ItemsService {
 
     async addItems(item: CreateItemsDTO): Promise<any> {
         let newItem = new Item();
+        
+        if (item.type_id) {
+            let type = await this.typesEntityRepository.findOne(item.type_id);
+            newItem.type_key = type;
+        }
 
         newItem.name     = item.name;
         newItem.type     = item.type;

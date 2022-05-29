@@ -10,6 +10,7 @@ import { ItemsModule } from './items/items.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 // import { diskStorage } from 'multer';
 import { GenralSliderModule } from './genral-slider/genral-slider.module';
+import { TypesModule } from './types/types.module';
 
 @Module({
   imports: [
@@ -42,7 +43,8 @@ import { GenralSliderModule } from './genral-slider/genral-slider.module';
     AuthModule,
     UsersModule,
     ItemsModule,
-    GenralSliderModule
+    GenralSliderModule,
+    TypesModule
   ],
   controllers: [AppController],
   providers: [AppService],

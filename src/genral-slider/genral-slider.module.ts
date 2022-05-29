@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { GeneralSlider } from 'src/entities/general-slider.entity';
+import { GeneralSlider } from '../entities/general-slider.entity';
 import { GenralSliderController } from './genral-slider.controller';
 import { GenralSliderService } from './genral-slider.service';
 

@@ -4,7 +4,7 @@ import { Response } from 'express';
 import { existsSync, mkdirSync, readFileSync, unlinkSync } from 'fs';
 import { diskStorage } from 'multer';
 import sharp = require('sharp');
-import { SliderUpdateDTO } from 'src/dto/slider-update.dto';
+import { SliderUpdateDTO } from '../dto/slider-update.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { GenralSliderService } from './genral-slider.service';
 
