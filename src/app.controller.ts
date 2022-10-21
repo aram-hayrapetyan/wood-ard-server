@@ -13,21 +13,19 @@ export class AppController {
     private authService: AuthService,
   ) {}
 
-  @Get('message')
-  getHello(): { message: string } {
-    return this.appService.getHello();
+  @Get()
+  async get(): Promise<string> {
+    return this.appService.get();
   }
 
   @UseGuards(LocalAuthGuard)
   @Post('auth/login')
-  async login(@Request() req) {
+  async login(@Request() req): Promise<{access_token: string}> {
     return await this.authService.login(req.user);
   }
 
-  // @UseGuards(JwtAuthGuard)
-
   @Get('public/:dir')
-  async getFiles(@Param() params: any, @Request() req: any, @Res() res: any) {
+  async getFiles(@Param() params: any, @Request() req: any, @Res() res: any): Promise<void> {
     const {dir} = params;
 
     readdir(join(process.cwd(), 'public', dir), (err, files) => {
@@ -51,7 +49,7 @@ export class AppController {
   }
 
   @Get('public/:dir/:file')
-  async getFile(@Param() params: any, @Res() res: any) {
+  async getFile(@Param() params: any, @Res() res: any): Promise<void> {
     const {dir, file} = params;
 
     res.sendFile(join(process.cwd(), 'public', dir, file), function (err) {
@@ -62,7 +60,7 @@ export class AppController {
   }
 
   @Get('public/:dir/thumbnail/:file')
-  async getFileThumb(@Param() params: any, @Res() res: any) {
+  async getFileThumb(@Param() params: any, @Res() res: any): Promise<void> {
     const {dir, file} = params;
 
     res.sendFile(join(process.cwd(), 'public', dir, 'thumbnail', file), function (err) {

@@ -1,8 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { CreateTypesDTO } from '../dto/type-create.dto';
+import { Connection, DeleteResult, UpdateResult } from 'typeorm';
 import { Types } from '../entities/types.entity';
-import { Connection } from 'typeorm';
-import { UpdateTypesDTO } from 'src/dto/type-update.dto';
+import {
+    TypesCreateDTO,
+    TypesUpdateDTO,
+} from '../dto';
 
 @Injectable()
 export class TypesService {
@@ -14,7 +16,7 @@ export class TypesService {
         return await this.connection.createQueryBuilder(Types, 'types').getMany();
     }
 
-    async addType(type: CreateTypesDTO) {
+    async addType(type: TypesCreateDTO): Promise<Types> {
         let newType = new Types();
 
         newType.name        = type.name;
@@ -23,7 +25,7 @@ export class TypesService {
         return await newType.save();
     }
 
-    async updateType(id: number, type: UpdateTypesDTO) {
+    async updateType(id: number, type: TypesUpdateDTO): Promise<UpdateResult> {
         return await this.connection.createQueryBuilder()
             .update(Types)
             .set(type)
@@ -31,7 +33,7 @@ export class TypesService {
             .execute();
     }
 
-    async deleteType(id: number) {
+    async deleteType(id: number): Promise<DeleteResult> {
         return await this.connection.createQueryBuilder()
             .delete()
             .from(Types)

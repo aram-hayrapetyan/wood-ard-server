@@ -1,12 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { readFileSync } from 'fs';
-import { CreateItemsDTO } from '../dto/items-create.dto';
-import { UpdateItemsDTO } from '../dto/items-update.dto';
+import { Connection, DeleteResult, InsertResult, Repository, UpdateResult } from 'typeorm';
 import { ItemAlbum } from '../entities/item-album.entity';
 import { Item } from '../entities/items.entity';
-import { Connection, Repository } from 'typeorm';
 import { Types } from '../entities/types.entity';
+import {
+    ItemsCreateDTO,
+    ItemsUpdateDTO,
+    ItemsQueryDTO,
+} from '../dto';
 
 @Injectable()
 export class ItemsService {
@@ -16,16 +18,7 @@ export class ItemsService {
         @InjectRepository(Types) public readonly typesEntityRepository: Repository<Types>
     ) {}
 
-    async getAll(): Promise<any[]> {
-        try {
-            const data = readFileSync(`${process.cwd()}/assets/jsons/items.json`, 'utf8');
-            return JSON.parse(data);
-        } catch (err) {
-            console.error(err)
-        }
-    }
-
-    async getItems(visible: boolean = false, params?: any): Promise<any[]> {
+    async getItems(visible: boolean = false, params?: ItemsQueryDTO): Promise<Item[]> {
         let query = this.connection.createQueryBuilder(Item, 'item')
             .leftJoinAndSelect('item.album', 'album')
             .leftJoinAndSelect('item.type_key', 'type_key')
@@ -35,24 +28,26 @@ export class ItemsService {
             query.andWhere('item.deleted IS NULL');
         }
 
-        if (params?.type && params?.type !== '-1') {
-            if (params.type === '0')
+        if (params?.type && params?.type !== -1) {
+            if (params.type === 0)
                 query.andWhere('item.type_key IS NULL');
             else
                 query.andWhere(`item.type_key.id = ${params.type}`);
         }
 
+        query.orderBy('created_at', 'DESC')
+
         return await query.getMany();
     }
 
-    async getItem(id: number) {
+    async getItem(id: number): Promise<Item> {
         return await this.connection.createQueryBuilder(Item, 'item')
             .leftJoinAndSelect('item.album', 'album')
             .where('item.id=:id', { id })
             .getOne();
     }
 
-    async addItems(item: CreateItemsDTO): Promise<any> {
+    async addItems(item: ItemsCreateDTO): Promise<Item> {
         let newItem = new Item();
         
         if (item.type_id) {
@@ -69,7 +64,7 @@ export class ItemsService {
         return await newItem.save();
     }
 
-    async editItem(id: number, item: UpdateItemsDTO): Promise<any> {
+    async editItem(id: number, item: ItemsUpdateDTO): Promise<UpdateResult> {
         return await this.connection.createQueryBuilder()
             .update(Item)
             .set(item)
@@ -77,7 +72,7 @@ export class ItemsService {
             .execute();
     }
 
-    async deleteRestoreItem(id: number, restore: boolean): Promise<any> {
+    async deleteRestoreItem(id: number, restore: boolean): Promise<UpdateResult> {
         return await this.connection.createQueryBuilder()
             .update(Item)
             .set({
@@ -88,7 +83,7 @@ export class ItemsService {
             .execute();
     }
 
-    async removeItem(id: number): Promise<any> {
+    async removeItem(id: number): Promise<DeleteResult> {
         return await this.connection.createQueryBuilder()
             .delete()
             .from(Item)
@@ -96,11 +91,11 @@ export class ItemsService {
             .execute();
     }
 
-    async getItemImage(image_id: number) {
+    async getItemImage(image_id: number): Promise<ItemAlbum> {
         return await this.itemAlbumEntityRepository.findOne(image_id);
     }
 
-    async storeItemImages(files: any, item: Item) {
+    async storeItemImages(files: any, item: Item): Promise<InsertResult> {
         let storeData = files.map(file => {
             return { 
                 item, 
@@ -116,7 +111,7 @@ export class ItemsService {
             .execute();
     }
 
-    async removeItemImage(id: number): Promise<any> {
+    async removeItemImage(id: number): Promise<DeleteResult> {
         return await this.connection.createQueryBuilder()
             .delete()
             .from(ItemAlbum)
@@ -124,7 +119,7 @@ export class ItemsService {
             .execute();
     }
 
-    async setItemGeneralImage(id: number, image: string, thumb: string) {
+    async setItemGeneralImage(id: number, image: string, thumb: string): Promise<UpdateResult> {
         return await this.connection.createQueryBuilder()
             .update(Item)
             .set({image, thumb})

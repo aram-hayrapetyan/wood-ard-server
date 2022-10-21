@@ -2,7 +2,7 @@ import { Validate } from "class-validator";
 import { Types } from "src/entities/types.entity";
 import isValid from "./validators/is-valid";
 
-export class UpdateItemsDTO {
+export class ItemsUpdateDTO {
     readonly type?: string;
 
     @Validate(isValid, [Types, 'id'])

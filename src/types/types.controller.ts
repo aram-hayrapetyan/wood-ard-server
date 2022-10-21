@@ -1,9 +1,11 @@
 import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Req, Res, UseGuards } from '@nestjs/common';
 import { Response } from 'express';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { CreateTypesDTO } from 'src/dto/type-create.dto';
-import { UpdateTypesDTO } from 'src/dto/type-update.dto';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { TypesService } from './types.service';
+import {
+    TypesCreateDTO,
+    TypesUpdateDTO,
+} from '../dto';
 
 @Controller('types')
 export class TypesController {
@@ -12,10 +14,10 @@ export class TypesController {
       ) {}
 
     @Get()
-    async getTypes(@Req() req, @Res() res: Response) {
+    async getTypes(@Req() req, @Res() res: Response): Promise<void> {
         let types = await this.typesService.getTypes();
 
-        return res.status(HttpStatus.OK).send(types);
+        res.status(HttpStatus.OK).send(types);
     }
 
     @UseGuards(JwtAuthGuard)
@@ -23,16 +25,16 @@ export class TypesController {
     async addTypes(
         @Req() req,
         @Res() res: Response,
-        @Body() body: CreateTypesDTO,
-    ) {
+        @Body() body: TypesCreateDTO,
+    ): Promise<void> {
         try {
             await this.typesService.addType(body);
 
             let types = await this.typesService.getTypes();
 
-            return res.status(HttpStatus.CREATED).send({ success: true, data: types });
+            res.status(HttpStatus.CREATED).send({ success: true, data: types });
         } catch (e) {
-            return res.status(HttpStatus.BAD_REQUEST).send({ success: false, message: e.message });
+            res.status(HttpStatus.BAD_REQUEST).send({ success: false, message: e.message });
         }
     }
 
@@ -42,16 +44,16 @@ export class TypesController {
         @Req() req, 
         @Res() res: Response, 
         @Param('id') id: string,
-        @Body() body: UpdateTypesDTO
-    ) {
+        @Body() body: TypesUpdateDTO
+    ): Promise<void> {
         try {
             await this.typesService.updateType(parseInt(id), body);
             
             let types = await this.typesService.getTypes();
 
-            return res.status(HttpStatus.ACCEPTED).send({ success: true, message: 'Type was updated.', data: types });
+            res.status(HttpStatus.ACCEPTED).send({ success: true, message: 'Type was updated.', data: types });
         } catch (e) {
-            return res.status(HttpStatus.BAD_REQUEST).send({ success: false, message: e.message });
+            res.status(HttpStatus.BAD_REQUEST).send({ success: false, message: e.message });
         }
     }
 
@@ -61,15 +63,15 @@ export class TypesController {
         @Req() req, 
         @Res() res: Response, 
         @Param('id') id: string
-    ) {
+    ): Promise<void> {
         try {
             await this.typesService.deleteType(parseInt(id));
 
             let types = await this.typesService.getTypes();
 
-            return res.status(HttpStatus.ACCEPTED).send({ success: true, message: 'Item was removed from system.', data: types });
+            res.status(HttpStatus.ACCEPTED).send({ success: true, message: 'Item was removed from system.', data: types });
         } catch (e) {
-            return res.status(HttpStatus.BAD_REQUEST).send({ success: false, message: e.message });
+            res.status(HttpStatus.BAD_REQUEST).send({ success: false, message: e.message });
         }
     }
 }
