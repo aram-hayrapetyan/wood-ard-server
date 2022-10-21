@@ -35,7 +35,10 @@ export class ItemsService {
                 query.andWhere(`item.type_key.id = ${params.type}`);
         }
 
-        query.orderBy('created_at', 'DESC')
+        query.take(params?.limit||10);
+        query.skip(params?.skip||0);
+        
+        query.orderBy('item.created_at', 'DESC');
 
         return await query.getMany();
     }
