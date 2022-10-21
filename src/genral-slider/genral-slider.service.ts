@@ -1,9 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { SliderCreateDTO } from '../dto/slider-create.dto';
-import { SliderUpdateDTO } from '../dto/slider-update.dto';
+import { Connection, DeleteResult, InsertResult, Repository } from 'typeorm';
 import { GeneralSlider } from '../entities/general-slider.entity';
-import { Connection, Repository } from 'typeorm';
+import {
+    SliderCreateDTO,
+    SliderUpdateDTO,
+} from '../dto';
 
 @Injectable()
 export class GenralSliderService {
@@ -12,8 +14,8 @@ export class GenralSliderService {
         @InjectRepository(GeneralSlider) public readonly sliderEntityRepository: Repository<GeneralSlider>
     ) {}
 
-    async getSlider(thumbnail?: string): Promise<any> {
-        let slider = await this.connection.query(`
+    async getSlider(thumbnail?: string): Promise<any[]> {
+        let slider: any[] = await this.connection.query(`
             SELECT * FROM \`general_slider\` ORDER BY \`order\` ASC;
         `);
 
@@ -28,17 +30,17 @@ export class GenralSliderService {
         return slider;
     }
 
-    async getOne(id: number) {
+    async getOne(id: number): Promise<GeneralSlider> {
         return await this.sliderEntityRepository.findOne(id);
     }
 
-    async lastOrderNumber() {
+    async lastOrderNumber(): Promise<any[]> {
         return await this.connection.query(`
             SELECT MAX(\`order\`) AS last_order_number FROM \`general_slider\`;
         `);
     }
 
-    async createSlider(body: SliderCreateDTO) {
+    async createSlider(body: SliderCreateDTO): Promise<InsertResult> {
         return await this.connection.createQueryBuilder()
             .insert()
             .into(GeneralSlider)
@@ -56,7 +58,7 @@ export class GenralSliderService {
         `);
     }
 
-    async deleteSlider(id: number): Promise<any> {
+    async deleteSlider(id: number): Promise<DeleteResult> {
         return await this.connection.createQueryBuilder()
             .delete()
             .from(GeneralSlider)

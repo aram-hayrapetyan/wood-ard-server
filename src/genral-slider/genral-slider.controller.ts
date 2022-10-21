@@ -4,9 +4,9 @@ import { Response } from 'express';
 import { existsSync, mkdirSync, readFileSync, unlinkSync } from 'fs';
 import { diskStorage } from 'multer';
 import sharp = require('sharp');
-import { SliderUpdateDTO } from '../dto/slider-update.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { GenralSliderService } from './genral-slider.service';
+import { SliderUpdateDTO } from '../dto';
 
 @Controller('slider')
 export class GenralSliderController {
@@ -15,13 +15,15 @@ export class GenralSliderController {
       ) {}
 
     @Get()
-    public async getImagesForSlider(@Req() req, @Res() res: Response, @Query('thumbnail') thumbnail: string) {
+    public async getImagesForSlider(@Req() req, @Res() res: Response, 
+        @Query('thumbnail') thumbnail: string
+    ): Promise<void> {
         try {
             let slider = await this.sliderService.getSlider(thumbnail);
             
-            return res.status(HttpStatus.OK).json(slider);
+            res.status(HttpStatus.OK).json(slider);
         } catch (e) {
-            return res.status(HttpStatus.BAD_REQUEST).send({ success: false, message: e.message });
+            res.status(HttpStatus.BAD_REQUEST).send({ success: false, message: e.message });
         }
     }
 
@@ -29,11 +31,11 @@ export class GenralSliderController {
         storage: diskStorage({
             destination: function (req, file, cb) {
                 if (!existsSync('public/slider')){
-                    mkdirSync('public/slider');
+                    mkdirSync('public/slider', { recursive: true });
                 }
 
                 if (!existsSync('public/slider/thumbnail')){
-                    mkdirSync('public/slider/thumbnail');
+                    mkdirSync('public/slider/thumbnail', { recursive: true });
                 }
 
                 return cb(null, 'public/slider');
@@ -56,7 +58,7 @@ export class GenralSliderController {
     @Post()
     public async uploadImagesSlider(@Req() req, @Res() res: Response, 
         @UploadedFile() file: Express.Multer.File
-    ) {
+    ): Promise<void> {
         try {
             let last_order_number = (await this.sliderService.lastOrderNumber())[0]?.last_order_number||0;
 
@@ -70,9 +72,9 @@ export class GenralSliderController {
 
             let slider = await this.sliderService.getSlider('');
             
-            return res.status(HttpStatus.CREATED).json({ success: true, response: 'Successful image uploading', data: slider });
+            res.status(HttpStatus.CREATED).json({ success: true, response: 'Successful image uploading', data: slider });
         } catch (e) {
-            return res.status(HttpStatus.BAD_REQUEST).send({ success: false, message: e.message });
+            res.status(HttpStatus.BAD_REQUEST).send({ success: false, message: e.message });
         }
     }
 
@@ -82,15 +84,15 @@ export class GenralSliderController {
         @Req() req, 
         @Res() res: Response, 
         @Body() body: SliderUpdateDTO[]
-    ) {
+    ): Promise<void> {
         try {
             let updated = await this.sliderService.updateSliderOrder(body);
             
             let slider = await this.sliderService.getSlider();
             
-            return res.status(HttpStatus.ACCEPTED).send({ success: true, message: 'Slider orders were updated.', data: slider });
+            res.status(HttpStatus.ACCEPTED).send({ success: true, message: 'Slider orders were updated.', data: slider });
         } catch (e) {
-            return res.status(HttpStatus.BAD_REQUEST).send({ success: false, message: e.message });
+            res.status(HttpStatus.BAD_REQUEST).send({ success: false, message: e.message });
         }
     }
 
@@ -100,7 +102,7 @@ export class GenralSliderController {
         @Req() req, 
         @Res() res: Response, 
         @Param('id') id: string
-    ) {
+    ): Promise<void> {
         try {
             let { image } = await this.sliderService.getOne(parseInt(id));
 
@@ -116,9 +118,9 @@ export class GenralSliderController {
 
             let slider = await this.sliderService.getSlider();
 
-            return res.status(HttpStatus.ACCEPTED).send({ success: true, message: 'Slider image was removed from system.', data: slider });
+            res.status(HttpStatus.ACCEPTED).send({ success: true, message: 'Slider image was removed from system.', data: slider });
         } catch (e) {
-            return res.status(HttpStatus.BAD_REQUEST).send({ success: false, message: e.message });
+            res.status(HttpStatus.BAD_REQUEST).send({ success: false, message: e.message });
         }
     }
     

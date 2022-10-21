@@ -1,4 +1,5 @@
-import { Controller, Get, Request, UseGuards } from '@nestjs/common';
+import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
+import { Response } from 'express';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { UsersService } from './users.service';
 
@@ -8,14 +9,14 @@ export class UsersController {
         private userService: UsersService,
     ) {}
 
-    @Get('')
-    async getUsers(@Request() req) {
-      return await this.userService.getAll();
+    @Get()
+    async getUsers(@Req() req, @Res() res: Response): Promise<void> {
+      res.status(200).send(await this.userService.getAll());
     }
 
     @UseGuards(JwtAuthGuard)
     @Get('profile')
-    async getProfile(@Request() req) {
-      return await this.userService.findOne(req.user.email);
+    async getProfile(@Req() req, @Res() res: Response): Promise<void> {
+      res.status(200).send(await this.userService.findOne(req.user.email));
     }
 }
