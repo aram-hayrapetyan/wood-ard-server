@@ -28,8 +28,8 @@ export class ItemsService {
             query.andWhere('item.deleted IS NULL');
         }
 
-        if (params?.type && params?.type !== -1) {
-            if (params.type === 0)
+        if (params?.type && params?.type != -1) {
+            if (params.type == 0)
                 query.andWhere('item.type_key IS NULL');
             else
                 query.andWhere(`item.type_key.id = ${params.type}`);
